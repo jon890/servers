@@ -52,8 +52,12 @@ export const UpdateIssueOptionsSchema = z.object({
   state: z.enum(["open", "closed"]).optional(),
 });
 
-export async function getIssue(owner: string, repo: string, issue_number: number) {
-  return githubRequest(`https://api.github.com/repos/${owner}/${repo}/issues/${issue_number}`);
+export async function getIssue(
+  owner: string,
+  repo: string,
+  issue_number: number
+) {
+  return githubRequest(`/repos/${owner}/${repo}/issues/${issue_number}`);
 }
 
 export async function addIssueComment(
@@ -62,10 +66,13 @@ export async function addIssueComment(
   issue_number: number,
   body: string
 ) {
-  return githubRequest(`https://api.github.com/repos/${owner}/${repo}/issues/${issue_number}/comments`, {
-    method: "POST",
-    body: { body },
-  });
+  return githubRequest(
+    `/repos/${owner}/${repo}/issues/${issue_number}/comments`,
+    {
+      method: "POST",
+      body: { body },
+    }
+  );
 }
 
 export async function createIssue(
@@ -73,13 +80,10 @@ export async function createIssue(
   repo: string,
   options: z.infer<typeof CreateIssueOptionsSchema>
 ) {
-  return githubRequest(
-    `https://api.github.com/repos/${owner}/${repo}/issues`,
-    {
-      method: "POST",
-      body: options,
-    }
-  );
+  return githubRequest(`/repos/${owner}/${repo}/issues`, {
+    method: "POST",
+    body: options,
+  });
 }
 
 export async function listIssues(
@@ -94,25 +98,23 @@ export async function listIssues(
     per_page: options.per_page?.toString(),
     since: options.since,
     sort: options.sort,
-    state: options.state
+    state: options.state,
   };
 
-  return githubRequest(
-    buildUrl(`https://api.github.com/repos/${owner}/${repo}/issues`, urlParams)
-  );
+  return githubRequest(buildUrl(`/repos/${owner}/${repo}/issues`, urlParams));
 }
 
 export async function updateIssue(
   owner: string,
   repo: string,
   issue_number: number,
-  options: Omit<z.infer<typeof UpdateIssueOptionsSchema>, "owner" | "repo" | "issue_number">
+  options: Omit<
+    z.infer<typeof UpdateIssueOptionsSchema>,
+    "owner" | "repo" | "issue_number"
+  >
 ) {
-  return githubRequest(
-    `https://api.github.com/repos/${owner}/${repo}/issues/${issue_number}`,
-    {
-      method: "PATCH",
-      body: options,
-    }
-  );
+  return githubRequest(`/repos/${owner}/${repo}/issues/${issue_number}`, {
+    method: "PATCH",
+    body: options,
+  });
 }
